@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@context/AuthContext';
 import apiService from '@services/api';
-import { sanitizeInput } from '@utils/sanitize';
+import { sanitizeInput, sanitizeText } from '@utils/sanitize';
 import type { Document, Pagination } from '../types';
 
 interface DocumentsResponse {
@@ -230,7 +230,7 @@ const Documents = () => {
                             </span>
                           )}
                         </div>
-                        <p className="text-gray-600 mt-1 line-clamp-2">{doc.content}</p>
+                        <p className="text-gray-600 mt-1 line-clamp-2">{sanitizeText(doc.content)}</p>
                         <p className="text-xs text-gray-400 mt-2">
                           {doc.owner ? `${doc.owner.firstName} ${doc.owner.lastName}` : 'Unknown'} -{' '}
                           {new Date(doc.createdAt).toLocaleDateString()}
