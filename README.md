@@ -6,58 +6,123 @@
 
 ## Overview
 
-SafeConnect Solutions is a comprehensive security-focused platform for managing sensitive business data. This project implements industry-standard security measures to protect against common web vulnerabilities including SQL Injection, XSS, CSRF, and DDoS attacks.
+SafeConnect Solutions is a full-stack security-focused platform for managing sensitive business data. The project implements industry-standard security measures to protect against common web vulnerabilities including SQL Injection, XSS, CSRF, and DDoS attacks.
+
+The platform is built as a portfolio and educational project demonstrating secure software development practices across the entire stack, from database queries to frontend rendering.
 
 ## Key Security Features
 
-- **SQL Injection Prevention**: Parameterized queries with Sequelize ORM
-- **XSS Protection**: Input sanitization with DOMPurify and CSP headers
-- **CSRF Protection**: Token-based validation for state-changing operations
-- **DDoS Mitigation**: Rate limiting with Redis and Nginx
-- **Secure Authentication**: JWT with refresh tokens and bcrypt password hashing
-- **Comprehensive Logging**: Audit trails and security event monitoring
-- **Penetration Tested**: Validated against OWASP Top 10 vulnerabilities
+- **SQL Injection Prevention**: Parameterized queries via Sequelize ORM — no raw SQL
+- **XSS Protection**: Backend sanitization with sanitize-html, frontend with DOMPurify, CSP headers via Helmet
+- **CSRF Protection**: Double-submit cookie pattern with Redis-backed token storage
+- **DDoS Mitigation**: Redis-backed distributed rate limiting at both application and Nginx level
+- **Secure Authentication**: JWT with 15-minute access tokens, 7-day revocable refresh tokens
+- **Password Security**: bcrypt with 12 salt rounds, mandatory complexity requirements
+- **Role-Based Access Control (RBAC)**: Admin, User, and Guest roles with middleware enforcement
+- **Account Lockout**: Automatic lockout after 5 failed login attempts (15-minute window)
+- **Audit Logging**: Full audit trail for authentication events and document operations
+- **Security Monitoring**: Admin dashboard for real-time security event tracking
+- **Unit Tested**: 109 automated tests covering all security-critical components
 
 ## Technology Stack
 
 ### Backend
-- Node.js 20+ with TypeScript
-- Express.js framework
-- PostgreSQL database with Sequelize ORM
-- Redis for session and rate limit storage
-- JWT authentication with refresh tokens
-- bcrypt for password hashing
+
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| Node.js | 20 LTS | Runtime |
+| Express.js | 5.2.x | Web framework |
+| TypeScript | 5.3.x | Type safety |
+| PostgreSQL | 15 | Primary database |
+| Sequelize | 6.35.x | ORM (SQL injection protection) |
+| Redis | 7 | Rate limiting, CSRF token storage |
+| jsonwebtoken | 9.0.x | JWT authentication |
+| bcrypt | 6.0.x | Password hashing (12 rounds) |
+| Helmet | 8.1.x | Security headers (CSP, HSTS, etc.) |
+| express-rate-limit | 8.2.x | Request rate limiting |
+| rate-limit-redis | 4.3.x | Distributed rate limit store |
+| sanitize-html | 2.11.x | Input sanitization |
+| express-validator | 7.0.x | Input validation |
+| Winston | 3.11.x | Structured logging |
+| Morgan | 1.10.x | HTTP access logging |
 
 ### Frontend
-- React 18+ with TypeScript
-- Vite 5+ build tool
-- React Router v6
-- Axios for HTTP requests
-- DOMPurify for XSS prevention
-- Material-UI / Tailwind CSS
 
-### DevOps
-- Docker and Docker Compose
-- Nginx reverse proxy
-- Automated security testing
-- OWASP ZAP integration
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| React | 19.2.x | UI framework |
+| TypeScript | 5.3.x | Type safety |
+| Vite | 7.3.x | Build tool |
+| React Router | 7.13.x | Client-side routing |
+| Axios | 1.6.x | HTTP client |
+| Tailwind CSS | 4.2.x | Utility-first CSS |
+| DOMPurify | 3.0.x | Frontend XSS sanitization |
+
+### Infrastructure
+
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| Docker | Latest | Containerization |
+| Docker Compose | Latest | Multi-container orchestration |
+| Nginx | Latest | Reverse proxy, rate limiting |
+| PostgreSQL | 15-alpine | Database container |
+| Redis | 7-alpine | Cache container |
+
+### Testing
+
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| Jest | 30.x | Test framework |
+| ts-jest | 29.x | TypeScript Jest transformer |
+| supertest | 7.x | HTTP integration testing |
+
+---
 
 ## Project Structure
 
 ```
 safeconnect-platform/
-├── backend/              # Node.js/Express API server
-├── frontend/             # React/Vite SPA application
-├── database/             # PostgreSQL initialization scripts
-├── nginx/                # Reverse proxy configuration
-├── docs/                 # Comprehensive documentation
-├── penetration-testing/  # Security testing scripts and reports
-└── docker-compose.yml    # Multi-container orchestration
+├── backend/                    # Node.js/Express API server
+│   ├── src/
+│   │   ├── config/             # DB, Redis, logger, Swagger setup
+│   │   ├── controllers/        # Request handlers (auth, document, admin)
+│   │   ├── middleware/         # Auth, CSRF, rate limiter, validation, error handler
+│   │   ├── models/             # Sequelize models (User, Document, AuditLog, etc.)
+│   │   ├── routes/             # Express route definitions
+│   │   ├── services/           # Business logic (authService, auditService)
+│   │   ├── utils/              # Validators, seed data
+│   │   └── __tests__/          # Unit tests (109 tests)
+│   ├── jest.config.ts
+│   ├── tsconfig.json
+│   └── package.json
+├── frontend/                   # React/Vite SPA
+│   ├── src/
+│   │   ├── pages/              # Login, Register, Dashboard, Documents, Monitoring
+│   │   ├── components/         # ProtectedRoute and shared components
+│   │   ├── context/            # AuthContext (global auth state)
+│   │   ├── services/           # API client, auth service
+│   │   └── utils/              # Sanitization, validation utilities
+│   ├── vite.config.ts
+│   └── package.json
+├── docs/                       # Documentation
+│   ├── SECURITY_GUIDE.md
+│   ├── API_DOCUMENTATION.md
+│   ├── ARCHITECTURE.md
+│   ├── SETUP_GUIDE.md
+│   └── PENETRATION_TEST_REPORT.md
+├── penetration-testing/        # Security testing scripts and reports
+│   └── RESULTS.md
+├── nginx/                      # Nginx reverse proxy configuration
+├── database/                   # PostgreSQL initialization scripts
+└── docker-compose.yml          # Multi-container orchestration
 ```
+
+---
 
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js 20+
 - Docker and Docker Compose
 - Git
@@ -70,32 +135,52 @@ git clone <repository-url>
 cd safeconnect-platform
 ```
 
-2. Copy environment files:
+2. Copy environment configuration:
 ```bash
 cp .env.example .env
 ```
 
-3. Start all services with Docker Compose:
+3. Start all services:
 ```bash
 docker-compose up -d
 ```
 
 4. Access the application:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:5000
-- API Documentation: http://localhost:5000/api-docs
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:5000 |
+| API Documentation | http://localhost:5000/api-docs |
+
+### Default Development Credentials
+
+These accounts are automatically seeded when `NODE_ENV=development`:
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@safeconnect.com | Admin123!@# |
+| User | user@safeconnect.com | User123!@# |
+
+> **Warning:** Change all credentials and secrets before any production deployment.
+
+---
 
 ## Documentation
 
-- [Security Guide](docs/SECURITY_GUIDE.md) - Comprehensive security measures
-- [API Documentation](docs/API_DOCUMENTATION.md) - REST API reference
-- [Architecture](docs/ARCHITECTURE.md) - System design and diagrams
-- [Setup Guide](docs/SETUP_GUIDE.md) - Detailed installation instructions
-- [Penetration Test Report](docs/PENETRATION_TEST_REPORT.md) - Security assessment
+| Document | Description |
+|----------|-------------|
+| [Security Guide](docs/SECURITY_GUIDE.md) | Detailed security implementation guide |
+| [API Documentation](docs/API_DOCUMENTATION.md) | REST API endpoint reference |
+| [Architecture](docs/ARCHITECTURE.md) | System design and component diagrams |
+| [Setup Guide](docs/SETUP_GUIDE.md) | Detailed installation and configuration guide |
+| [Penetration Test Report](docs/PENETRATION_TEST_REPORT.md) | Full OWASP Top 10 security assessment |
+
+---
 
 ## Configuration
 
-All settings are configured via environment variables in the `.env` file.
+All settings are managed via environment variables in the `.env` file.
 
 ### Environment Variables Reference
 
@@ -105,97 +190,85 @@ Copy `.env.example` to `.env` and customize:
 cp .env.example .env
 ```
 
-#### Core Application Settings
+#### Core Application
 
-| Variable | Purpose | Default | Required | Example |
-|----------|---------|---------|----------|---------|
-| `NODE_ENV` | Environment mode | `development` | Yes | `production` |
-| `APP_PORT` | Express server port | `5000` | No | `5000` |
-| `APP_NAME` | Application name | `SafeConnect` | No | `SafeConnect` |
-| `LOG_LEVEL` | Logging verbosity | `info` | No | `debug` |
-| `LOG_FILE_PATH` | Log file path | `logs/app.log` | No | `logs/app.log` |
+| Variable | Purpose | Default | Required |
+|----------|---------|---------|----------|
+| `NODE_ENV` | Environment mode | `development` | Yes |
+| `APP_PORT` | Express server port | `5000` | No |
+| `APP_NAME` | Application name | `SafeConnect` | No |
+| `LOG_LEVEL` | Logging verbosity | `info` | No |
 
-#### Database Configuration
+#### Database
 
-| Variable | Purpose | Default | Required | Example |
-|----------|---------|---------|----------|---------|
-| `DB_HOST` | PostgreSQL hostname | `postgres` | Yes | `db.example.com` |
-| `DB_PORT` | PostgreSQL port | `5432` | No | `5432` |
-| `DB_NAME` | Database name | `safeconnect_db` | Yes | `safeconnect_db` |
-| `DB_USER` | Database user | `safeconnect_user` | Yes | `safeconnect_user` |
-| `DB_PASSWORD` | Database password | None | **YES - CHANGE** | `[secure-password]` |
-| `DB_POOL_MIN` | Min pool connections | `2` | No | `2` |
-| `DB_POOL_MAX` | Max pool connections | `10` | No | `10` |
+| Variable | Purpose | Default | Required |
+|----------|---------|---------|----------|
+| `DB_HOST` | PostgreSQL hostname | `postgres` | Yes |
+| `DB_PORT` | PostgreSQL port | `5432` | No |
+| `DB_NAME` | Database name | `safeconnect_db` | Yes |
+| `DB_USER` | Database user | `safeconnect_user` | Yes |
+| `DB_PASSWORD` | Database password | None | **YES** |
+| `DB_POOL_MIN` | Min pool connections | `2` | No |
+| `DB_POOL_MAX` | Max pool connections | `10` | No |
 
 #### JWT Authentication
 
-| Variable | Purpose | Default | Required | Example |
-|----------|---------|---------|----------|---------|
-| `JWT_SECRET` | Access token signing key | None | **YES - GENERATE** | `[32+ random chars]` |
-| `JWT_REFRESH_SECRET` | Refresh token signing key | None | **YES - GENERATE** | `[32+ random chars]` |
-| `JWT_ACCESS_EXPIRY` | Access token lifetime | `15m` | No | `15m` |
-| `JWT_REFRESH_EXPIRY` | Refresh token lifetime | `7d` | No | `7d` |
+| Variable | Purpose | Default | Required |
+|----------|---------|---------|----------|
+| `JWT_SECRET` | Access token signing key | None | **YES** |
+| `JWT_REFRESH_SECRET` | Refresh token signing key | None | **YES** |
+| `JWT_ACCESS_EXPIRY` | Access token lifetime | `15m` | No |
+| `JWT_REFRESH_EXPIRY` | Refresh token lifetime | `7d` | No |
 
-**How to Generate Secure Secrets:**
+**Generating secure secrets:**
 
 ```bash
-# Linux/Mac
+# Linux/macOS
 openssl rand -base64 32
 
 # Windows (PowerShell)
 [Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
 ```
 
-#### Security Configuration
+#### Security
 
-| Variable | Purpose | Default | Required | Example |
-|----------|---------|---------|----------|---------|
-| `CSRF_SECRET` | CSRF token signing key | None | **YES - GENERATE** | `[32+ random chars]` |
-| `SESSION_SECRET` | Session encryption key | None | **YES - GENERATE** | `[32+ random chars]` |
-| `CORS_ORIGIN` | Allowed CORS origin | `http://localhost:3000` | Yes | `https://app.example.com` |
-| `FRONTEND_URL` | Frontend URL for redirects | `http://localhost:3000` | Yes | `https://app.example.com` |
-| `BCRYPT_SALT_ROUNDS` | Password hashing rounds | `12` | No | `12` |
-| `COOKIE_SECURE` | Secure cookie flag | `false` | No | `true` |
-| `COOKIE_SAME_SITE` | SameSite cookie policy | `strict` | No | `strict` |
+| Variable | Purpose | Default | Required |
+|----------|---------|---------|----------|
+| `CSRF_SECRET` | CSRF token signing key | None | **YES** |
+| `CORS_ORIGIN` | Allowed CORS origin | `http://localhost:3000` | Yes |
+| `FRONTEND_URL` | Frontend URL for redirects | `http://localhost:3000` | Yes |
+| `BCRYPT_SALT_ROUNDS` | Password hashing rounds | `12` | No |
+| `COOKIE_SECURE` | Secure cookie flag | `false` | No |
+| `COOKIE_SAME_SITE` | SameSite cookie policy | `strict` | No |
 
-#### Redis Configuration
+#### Redis
 
-| Variable | Purpose | Default | Required | Example |
-|----------|---------|---------|----------|---------|
-| `REDIS_HOST` | Redis hostname | `redis` | Yes | `redis.example.com` |
-| `REDIS_PORT` | Redis port | `6379` | No | `6379` |
-| `REDIS_PASSWORD` | Redis password | None | Optional | `[if-required]` |
-| `REDIS_DB` | Redis database number | `0` | No | `0` |
+| Variable | Purpose | Default | Required |
+|----------|---------|---------|----------|
+| `REDIS_HOST` | Redis hostname | `redis` | Yes |
+| `REDIS_PORT` | Redis port | `6379` | No |
+| `REDIS_PASSWORD` | Redis password | None | Optional |
 
 #### Rate Limiting
 
-| Variable | Purpose | Default | Required | Example |
-|----------|---------|---------|----------|---------|
-| `RATE_LIMIT_WINDOW_MS` | Rate limit window (ms) | `900000` | No | `900000` |
-| `RATE_LIMIT_MAX_REQUESTS` | Max requests per window | `100` | No | `100` |
-| `RATE_LIMIT_LOGIN_MAX` | Login attempts per window | `5` | No | `5` |
-| `RATE_LIMIT_REGISTER_MAX` | Registration per hour | `3` | No | `3` |
-
-#### File Upload
-
-| Variable | Purpose | Default | Required | Example |
-|----------|---------|---------|----------|---------|
-| `MAX_FILE_SIZE` | Maximum file size | `5242880` | No | `5242880` |
-| `ALLOWED_FILE_TYPES` | Allowed MIME types | `pdf,doc,docx,txt` | No | `pdf,doc,docx,txt` |
+| Variable | Purpose | Default | Required |
+|----------|---------|---------|----------|
+| `RATE_LIMIT_WINDOW_MS` | Rate limit window (ms) | `900000` | No |
+| `RATE_LIMIT_MAX_REQUESTS` | Max requests per window | `100` | No |
+| `RATE_LIMIT_LOGIN_MAX` | Login attempts per window | `5` | No |
+| `RATE_LIMIT_REGISTER_MAX` | Registrations per hour | `3` | No |
 
 #### Monitoring
 
-| Variable | Purpose | Default | Required | Example |
-|----------|---------|---------|----------|---------|
-| `ENABLE_SECURITY_ALERTS` | Enable security alerts | `true` | No | `true` |
-| `ALERT_EMAIL` | Alert notification email | None | Optional | `admin@example.com` |
-| `FAILED_LOGIN_THRESHOLD` | Failed login alert threshold | `5` | No | `5` |
-| `SUSPICIOUS_ACTIVITY_THRESHOLD` | Suspicious activity threshold | `10` | No | `10` |
+| Variable | Purpose | Default | Required |
+|----------|---------|---------|----------|
+| `ENABLE_SECURITY_ALERTS` | Enable security alerts | `true` | No |
+| `ALERT_EMAIL` | Alert notification email | None | Optional |
+| `FAILED_LOGIN_THRESHOLD` | Failed login alert threshold | `5` | No |
 
 ### Configuration Examples
 
-#### Development Setup
-
+**Development:**
 ```env
 NODE_ENV=development
 APP_PORT=5000
@@ -207,8 +280,7 @@ JWT_REFRESH_SECRET=dev-refresh-secret-change-this
 CORS_ORIGIN=http://localhost:3000
 ```
 
-#### Production Setup
-
+**Production:**
 ```env
 NODE_ENV=production
 APP_PORT=5000
@@ -223,101 +295,64 @@ FRONTEND_URL=https://yourdomain.com
 COOKIE_SECURE=true
 ```
 
-### Changing Configuration After Deployment
-
-Some settings can be changed by updating `.env` and restarting:
-
-```bash
-# Edit .env
-nano .env
-
-# Restart affected services
-docker-compose restart backend
-# or
-docker-compose restart backend redis
-```
-
-**Note:** Database configuration changes require data migration.
-
-### Security Configuration Details
-
-#### JWT Configuration
-
-The application uses JWT for stateless authentication:
-
-- **Access Tokens:** Short-lived (15 minutes default)
-  - Used for: All API requests
-  - Storage: Memory + HttpOnly cookie
-  - Refresh: Automatic via refresh endpoint
-
-- **Refresh Tokens:** Long-lived (7 days default)
-  - Used for: Obtaining new access tokens
-  - Storage: Database + Secure cookie
-  - Expiry: Hard limit (cannot refresh after 7 days)
-
-#### Password Policy
-
-- Minimum length: 8 characters
-- Hashing: bcrypt with 12 salt rounds
-- Storage: Never plaintext
-- Validation: Must include uppercase, lowercase, number
-
-#### CORS Configuration
-
-Only requests from `CORS_ORIGIN` will have access. Be specific:
-
-```env
-# Correct (specific domain)
-CORS_ORIGIN=https://app.example.com
-
-# Wrong (too permissive)
-CORS_ORIGIN=*
-```
-
-### Environment Variable Validation
-
-The application validates all required variables on startup. If any are missing, it will refuse to start with a clear error message indicating which variables are required.
-
-Test validation:
-
-```bash
-# Missing required variable will show error
-docker-compose up backend
-# Error: Required environment variable JWT_SECRET not set
-```
+---
 
 ## Development
 
-### Backend Development
+### Backend
+
 ```bash
 cd backend
 npm install
 npm run dev
 ```
 
-### Frontend Development
+### Frontend
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-### Run Tests
+### Running Tests
+
 ```bash
-# Backend tests
+# Backend unit tests (109 tests)
 cd backend
 npm test
 
-# Security tests
+# Backend tests with coverage report
+npm test -- --coverage
+
+# Watch mode during development
+npm run test:watch
+
+# Security penetration tests
 cd penetration-testing
-npm run test:security
+npm install
+node scripts/run-all-tests.js
 ```
+
+The unit test suite covers:
+
+| Area | Tests |
+|------|-------|
+| Authentication controller | Login, register, logout, refresh, me |
+| Document controller | CRUD with ownership and sharing logic |
+| Auth middleware | JWT validation, role authorization, optional auth |
+| Error handler middleware | ApiError, stack trace exposure, 404 handling |
+| Validate middleware | express-validator integration |
+| Auth service | Token generation, verification, rotation, revocation |
+| Audit service | Log events, security event creation, threshold alerts |
+| User model logic | isLocked, incrementFailedAttempts, resetFailedAttempts |
+| RefreshToken model logic | isExpired, isValid |
+
+---
 
 ## Deployment
 
 ### Production Deployment with Docker Compose
-
-For production deployments, follow these steps:
 
 #### 1. Clone and Prepare
 
@@ -329,61 +364,53 @@ cp .env.example .env
 
 #### 2. Configure Environment Variables
 
-Edit `.env` with production values:
+Generate secure secrets:
 
 ```bash
-# Generate secure random values (minimum 32 characters)
 JWT_SECRET=$(openssl rand -base64 32)
 JWT_REFRESH_SECRET=$(openssl rand -base64 32)
 DB_PASSWORD=$(openssl rand -base64 16)
 CSRF_SECRET=$(openssl rand -base64 32)
-
-# Update .env file with these secure values
-nano .env
 ```
 
-**Critical Environment Variables:**
+Update `.env` with production values:
 
 ```env
 NODE_ENV=production
 APP_PORT=5000
 DB_HOST=<your-postgres-host>
 DB_USER=safeconnect_user
-DB_PASSWORD=<generate-secure-value>
-JWT_SECRET=<generate-secure-value>
-JWT_REFRESH_SECRET=<generate-secure-value>
+DB_PASSWORD=<generated-above>
+JWT_SECRET=<generated-above>
+JWT_REFRESH_SECRET=<generated-above>
+CSRF_SECRET=<generated-above>
 CORS_ORIGIN=https://yourdomain.com
 FRONTEND_URL=https://yourdomain.com
 REDIS_HOST=<your-redis-host>
 COOKIE_SECURE=true
 ```
 
-#### 3. Build Docker Images
+#### 3. Build and Start
 
 ```bash
-docker-compose -f docker-compose.yml build
+docker-compose build
+docker-compose up -d
 ```
 
-#### 4. Start Services
+#### 4. Verify Deployment
 
 ```bash
-docker-compose -f docker-compose.yml up -d
-```
-
-#### 5. Verify Deployment
-
-```bash
-# Check all containers are healthy
+# Check all containers are running
 docker-compose ps
 
 # Test API health endpoint
-curl -I https://yourdomain.com/health
+curl -I http://localhost:5000/health
 
-# View logs for any issues
+# View startup logs
 docker-compose logs backend
 ```
 
-#### 6. Enable HTTPS with Let's Encrypt
+#### 5. Enable HTTPS with Nginx
 
 Update `nginx/nginx.conf`:
 
@@ -395,7 +422,6 @@ server {
     ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
 
-    # Security headers
     add_header Strict-Transport-Security "max-age=31536000" always;
     add_header X-Content-Type-Options nosniff always;
     add_header X-Frame-Options DENY always;
@@ -414,415 +440,187 @@ Then restart Nginx:
 docker-compose restart nginx
 ```
 
-#### 7. Database Setup (First Time Only)
+#### 6. Database Setup (First Run)
 
 ```bash
 # Run migrations
 docker-compose exec backend npm run migrate
 
-# Seed initial data (optional)
+# Seed initial admin account (optional)
 docker-compose exec backend npm run seed
 ```
 
-#### 8. Monitoring and Backups
+#### 7. Monitoring and Backups
 
-**Daily Database Backup:**
 ```bash
+# Daily database backup
 docker-compose exec postgres pg_dump -U safeconnect_user \
   safeconnect_db > backup-$(date +%Y%m%d).sql
-```
 
-**Monitor Application:**
-```bash
-# Check container resource usage
-docker stats
-
-# View recent logs
+# Monitor logs
 docker-compose logs -f backend
+
+# Container resource usage
+docker stats
 ```
 
 ### Production Deployment Checklist
 
-- [ ] All environment variables are secure (no defaults in production)
-- [ ] Database backups scheduled daily
-- [ ] HTTPS enabled with valid certificate
-- [ ] Firewall configured to allow only 80 and 443
-- [ ] Database user has restricted privileges
-- [ ] Monitoring/alerting configured
-- [ ] Incident response plan documented
-- [ ] Regular security updates scheduled
+- [ ] All environment variable secrets are unique and randomly generated
+- [ ] `NODE_ENV=production` is set
+- [ ] HTTPS enabled with valid TLS certificate
+- [ ] `COOKIE_SECURE=true` is set
+- [ ] Database user has restricted privileges (no superuser)
+- [ ] Firewall configured to expose only ports 80 and 443
+- [ ] Database backups scheduled and tested
+- [ ] Monitoring and alerting configured
+- [ ] Default seeded accounts changed or removed
+- [ ] `CORS_ORIGIN` set to exact production domain
 
-### Troubleshooting Production Deployment
-
-**Issue: "Cannot connect to database"**
-- Verify `DB_HOST` is accessible from container
-- Check PostgreSQL is running and accepting connections
-- Confirm firewall allows port 5432
-
-**Issue: "CORS errors on frontend"**
-- Verify `CORS_ORIGIN` matches frontend domain exactly
-- Check frontend URL does not have trailing slash
-
-**Issue: "SSL certificate errors"**
-- Verify certificate path is correct
-- Check certificate is not expired: `openssl x509 -in cert.pem -noout -dates`
-- Ensure full chain certificate is used, not just server cert
+---
 
 ## Security
 
-This platform implements multiple layers of security:
+This platform implements defense in depth across all layers:
 
-1. **Input Validation**: All inputs validated and sanitized
-2. **Authentication**: JWT-based with secure token management
-3. **Authorization**: Role-based access control (RBAC)
-4. **Encryption**: Passwords hashed with bcrypt, data encrypted at rest
-5. **Rate Limiting**: Protection against brute force and DDoS
-6. **Monitoring**: Real-time security event logging and alerting
+| Layer | Control |
+|-------|---------|
+| Input | express-validator (all endpoints), sanitize-html (backend), DOMPurify (frontend) |
+| Authentication | JWT access + refresh tokens, bcrypt password hashing, account lockout |
+| Authorization | RBAC middleware, per-resource ownership checks |
+| Transport | CORS policy, security headers via Helmet, SameSite cookies |
+| Infrastructure | Redis rate limiting, Nginx proxy, CSRF double-submit cookies |
+| Monitoring | Audit logs, security event tracking, admin dashboard |
 
-For detailed security information, see [SECURITY_GUIDE.md](docs/SECURITY_GUIDE.md).
+For the full security assessment, see [PENETRATION_TEST_REPORT.md](docs/PENETRATION_TEST_REPORT.md).
+For implementation details, see [SECURITY_GUIDE.md](docs/SECURITY_GUIDE.md).
+
+---
 
 ## Troubleshooting
 
-### Common Issues and Solutions
-
-#### Port Already in Use
+### Port Already in Use
 
 **Problem:** `Error: listen EADDRINUSE: address already in use :::5000`
 
-**Solution:**
-
-Find which process is using the port:
+Find and kill the process:
 
 ```bash
 # macOS/Linux
-lsof -i :5000
-
-# Windows
-netstat -ano | findstr :5000
-```
-
-Then choose one:
-
-**Option 1: Change the port in docker-compose.yml**
-```yaml
-backend:
-  ports:
-    - "5001:5000"  # Change 5000 to 5001
-```
-
-**Option 2: Kill the process (if it is yours)**
-```bash
-# macOS/Linux
-kill -9 <PID>
+lsof -i :5000 && kill -9 <PID>
 
 # Windows PowerShell
+netstat -ano | findstr :5000
 taskkill /PID <PID> /F
 ```
 
-**Option 3: Use different compose project**
-```bash
-docker-compose -p safeconnect-alt up -d
+Or change the port in `docker-compose.yml`:
+```yaml
+backend:
+  ports:
+    - "5001:5000"
 ```
 
-#### Database Connection Errors
+### Database Connection Errors
 
-**Problem:** `Error: connect ECONNREFUSED 127.0.0.1:5432` or `Connection timeout`
-
-**Solution:**
-
-Check if PostgreSQL is running:
+**Problem:** `connect ECONNREFUSED 127.0.0.1:5432`
 
 ```bash
-# See all running containers
-docker ps | grep postgres
+# Check if PostgreSQL container is running
+docker-compose ps | grep postgres
 
-# If not running, start it
+# Start it if not running
 docker-compose up -d postgres
 
 # Check logs
 docker-compose logs postgres
 ```
 
-If using external database, verify connection:
-
+Full reset (loses all data):
 ```bash
-# Test connection
-docker run -it --rm postgres:15-alpine \
-  psql -h your-db-host -U safeconnect_user -d safeconnect_db -c "SELECT 1"
+docker-compose down -v && docker-compose up -d
 ```
 
-Reset database completely:
+### Frontend Cannot Reach Backend
 
+**Problem:** Network requests to `http://localhost:5000/api` fail
+
+1. Verify backend is running: `curl http://localhost:5000/health`
+2. Check `CORS_ORIGIN` in `.env` matches the frontend URL exactly
+3. Verify `VITE_API_URL` in frontend `.env` is set correctly
+4. Rebuild frontend after env changes: `npm run dev`
+
+### Authentication Not Working
+
+1. Verify Redis is running: `docker-compose ps | grep redis`
+2. Check JWT secrets are set: `docker-compose exec backend printenv | grep JWT`
+3. Clear browser storage: DevTools > Application > Clear Site Data
+4. Check cookies in DevTools — `accessToken` and `refreshToken` should be present with `HttpOnly` flag
+
+### Rate Limiting Issues
+
+**Problem:** `429 Too Many Requests` during development
+
+Clear rate limit counters in Redis:
 ```bash
-# Remove volumes and restart (loses all data)
-docker-compose down -v
-docker-compose up -d postgres
-docker-compose exec postgres psql -U safeconnect_user -c "CREATE DATABASE safeconnect_db;"
+docker-compose exec redis redis-cli FLUSHALL
+docker-compose restart backend
 ```
 
-#### Frontend Cannot Connect to Backend API
+Adjust limits in `.env`:
+```env
+RATE_LIMIT_WINDOW_MS=1800000    # 30 minutes
+RATE_LIMIT_MAX_REQUESTS=200
+RATE_LIMIT_LOGIN_MAX=10
+```
 
-**Problem:** Network tab shows failed requests to `http://localhost:5000/api`
+### Docker Build Fails
 
-**Solution:**
-
-1. **Verify backend is running:**
-   ```bash
-   curl http://localhost:5000/health
-   # Should return 200 OK
-   ```
-
-2. **Check CORS configuration:**
-   - Backend logs should show CORS checks
-   - Verify `.env` has correct `CORS_ORIGIN`
-   - Frontend URL must match exactly (including https/http)
-
-3. **Verify API URL in frontend:**
-   - Check `.env` in frontend: `VITE_API_URL=http://localhost:5000/api`
-   - Rebuild if changed: `npm run dev`
-
-4. **Check browser console:**
-   - CORS error message usually tells you what is wrong
-   - Common: `Access-Control-Allow-Origin` mismatch
-
-5. **Network troubleshooting:**
-   ```bash
-   # Test from container
-   docker-compose exec frontend curl http://backend:5000/health
-   ```
-
-#### Authentication Not Working
-
-**Problem:** Login fails or tokens not being saved
-
-**Solution:**
-
-1. **Clear browser storage:**
-   - DevTools -> Application -> Clear Site Data
-   - Or use an Incognito window
-
-2. **Verify Redis is running:**
-   ```bash
-   docker ps | grep redis
-   docker-compose logs redis
-   ```
-
-3. **Check JWT secrets are set:**
-   ```bash
-   docker-compose exec backend printenv | grep JWT
-   # Should show non-empty JWT_SECRET and JWT_REFRESH_SECRET
-   ```
-
-4. **Verify cookies are being saved:**
-   - DevTools -> Application -> Cookies
-   - Look for `accessToken` and `refreshToken` cookies
-   - Should have HttpOnly flag set
-
-5. **Check server logs:**
-   ```bash
-   docker-compose logs backend | grep -i auth
-   ```
-
-#### Docker Build Fails
-
-**Problem:** `error building image` or `step X failed`
-
-**Solution:**
-
-Clean Docker cache:
-
+Clean cache and rebuild:
 ```bash
 docker system prune -a
 docker-compose build --no-cache backend
 ```
 
-Check Node version compatibility:
-
+View detailed build output:
 ```bash
-docker run node:20 node --version
-# Should be v20.x.x
-```
-
-Check for common issues:
-
-```bash
-# View full build output
 docker-compose build backend --progress=plain
-
-# Check Dockerfile exists
-ls backend/Dockerfile
 ```
 
-#### Rate Limiting Too Strict
-
-**Problem:** Getting `429 Too Many Requests` errors
-
-**Solution:**
-
-1. **Check rate limit configuration:**
-   ```bash
-   grep RATE_LIMIT .env
-   ```
-
-2. **Clear Redis cache:**
-   ```bash
-   docker-compose exec redis redis-cli FLUSHALL
-   ```
-
-3. **Restart backend (clears in-memory limits):**
-   ```bash
-   docker-compose restart backend
-   sleep 5  # Wait for startup
-   ```
-
-4. **Check Redis memory:**
-   ```bash
-   docker-compose exec redis redis-cli INFO memory
-   # Check used_memory_human
-   ```
-
-5. **Adjust limits in `.env`:**
-   ```env
-   RATE_LIMIT_WINDOW_MS=1800000         # Increase window to 30min
-   RATE_LIMIT_MAX_REQUESTS=200          # Increase limit
-   RATE_LIMIT_LOGIN_MAX=10              # Increase login attempts
-   ```
-
-   Then restart:
-   ```bash
-   docker-compose restart backend
-   ```
-
-#### Password Issues
-
-**Problem:** "Password must include uppercase, lowercase, number, special char" or login fails
-
-**Solution:**
-
-Use a strong password:
-
-```
-Example: Secure@Pass123
-
-Required:
-- At least 8 characters
-- One uppercase letter
-- One lowercase letter
-- One number
-- One special character (!@#$%^&*)
-```
-
-For testing, use provided defaults:
-- Admin: admin@safeconnect.com / Admin123!@#
-- User: user@safeconnect.com / User123!@#
-
-#### Database Migrations Failed
+### Database Migration Errors
 
 **Problem:** "Migration failed" or "table already exists"
 
-**Solution:**
-
-Reset and remigrate:
-
 ```bash
-# Undo all migrations
+# Undo all migrations and reapply
 docker-compose exec backend npm run migrate:undo:all
-
-# Run migrations again
 docker-compose exec backend npm run migrate
-
-# Seed data (optional)
-docker-compose exec backend npm run seed
 ```
 
 Or full reset:
-
 ```bash
-docker-compose down -v
-docker-compose up -d
-# Database will auto-initialize
+docker-compose down -v && docker-compose up -d
 ```
 
 ### Debug Mode
 
-Enable detailed logging for troubleshooting:
-
+Enable verbose logging:
 ```bash
-# Set debug logging in .env
+# In .env
 LOG_LEVEL=debug
 
-# Restart backend
+# Restart
 docker-compose restart backend
 
-# View logs with filtering
+# View filtered logs
 docker-compose logs backend -f | grep -i error
 ```
 
-### Performance Issues
-
-**Problem:** Application is slow or unresponsive
-
-**Solutions:**
-
-Check container resource limits:
-```bash
-docker stats
-# Look for high CPU/memory usage
-```
-
-Clear Redis cache:
-```bash
-docker-compose exec redis redis-cli FLUSHDB
-```
-
-Check database connections:
-```bash
-docker-compose exec postgres psql -U safeconnect_user \
-  -c "SELECT count(*) FROM pg_stat_activity;"
-```
-
-Monitor logs for errors:
-```bash
-docker-compose logs -f backend
-```
-
-### Getting More Help
-
-If the above does not solve your issue:
-
-1. **Check all containers are healthy:**
-   ```bash
-   docker-compose ps
-   # Status should show "healthy" or "running" for all
-   ```
-
-2. **Review all logs:**
-   ```bash
-   docker-compose logs
-   ```
-
-3. **Verify .env file:**
-   ```bash
-   cat .env
-   # Compare with .env.example
-   ```
-
-4. **Try full reset:**
-   ```bash
-   docker-compose down -v
-   docker-compose up -d
-   # This takes 30-60 seconds
-   ```
-
-5. **Check Docker resources:**
-   ```bash
-   docker stats
-   # Ensure Docker has enough CPU and memory
-   ```
+---
 
 ## License
 
-This project is developed for educational and demonstration purposes.
+This project is developed for educational and portfolio purposes.
 
 ## Author
 
