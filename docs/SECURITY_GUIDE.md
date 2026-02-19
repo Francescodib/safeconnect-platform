@@ -124,6 +124,10 @@ helmet({
 5. Client includes token in request header for state-changing operations
 6. Server validates token from header matches cookie
 
+### Exempt Paths
+
+Authentication endpoints (`/auth/login`, `/auth/register`, `/auth/refresh`) are exempt from CSRF validation because they establish the session before a CSRF token is available. The CSRF middleware is mounted at `/api/`, so exempt paths are specified as relative paths (without the `/api/` prefix).
+
 ### Implementation
 
 ```typescript
@@ -294,15 +298,19 @@ if (document.ownerId !== userId && !document.shared) {
 ### Security Events
 
 **Event Types**
-- failed_login: Failed authentication attempts
-- rate_limit: Rate limit violations
-- invalid_token: Invalid or expired token usage
-- suspicious_activity: Unusual patterns
+- `failed_login`: Failed authentication attempts
+- `rate_limit`: Rate limit violations
+- `invalid_token`: Genuinely invalid, malformed, or tampered token (not normal expiration)
+- `suspicious_activity`: Unusual patterns
+
+**Note on Token Expiration**
+
+Normal JWT access token expiration is **not** logged as a security event. When a 15-minute access token expires, the client silently refreshes it using the refresh token — this is expected behaviour. Only tokens that fail signature verification (forged, tampered, or signed with the wrong secret) trigger an `invalid_token` event. This keeps the security dashboard free of false-positive alerts during normal usage.
 
 **Severity Levels**
 - Low: Minor security concerns
 - Medium: Potential security issues
-- High: Serious security threats
+- High: Serious security threats (e.g., `invalid_token` from a forged JWT)
 - Critical: Active attacks or breaches
 
 ### Alerting

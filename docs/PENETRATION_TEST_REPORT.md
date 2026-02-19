@@ -473,7 +473,7 @@ Reviewed what events are captured by `auditService.ts`.
 
 Reviewed `SecurityEvent` model usage.
 
-**Finding:** High-severity security events (rate limit violations, invalid token usage, suspicious activity) are stored in the `security_events` table with severity levels (low/medium/high/critical) and are visible in the admin monitoring dashboard.
+**Finding:** Security events are stored in the `security_events` table with severity levels (low/medium/high/critical) and are visible in the admin monitoring dashboard. The system correctly distinguishes between normal JWT expiration (handled silently during the refresh flow) and genuinely invalid or tampered tokens (logged as `invalid_token` at high severity). This prevents false-positive alerts from cluttering the monitoring dashboard during normal usage.
 
 **3. Sensitive Data in Logs**
 
@@ -615,10 +615,11 @@ The following results were obtained from the automated penetration testing scrip
 
 | Test Suite | Status | Duration | Tests Passed |
 |------------|--------|----------|--------------|
-| XSS (Cross-Site Scripting) | PASS | 3.44s | All |
-| SQL Injection | PASS | 2.13s | All |
-| Rate Limiting | PASS | 2.32s | All |
-| **Total** | **PASS** | **7.89s** | **3/3** |
+| CSRF (Cross-Site Request Forgery) | PASS | 1.85s | All |
+| XSS (Cross-Site Scripting) | PASS | 2.97s | All |
+| SQL Injection | PASS | 2.12s | All |
+| Rate Limiting | PASS | 2.33s | All |
+| **Total** | **PASS** | **9.27s** | **4/4** |
 
 **Overall Success Rate: 100%**
 

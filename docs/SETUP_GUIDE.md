@@ -341,6 +341,45 @@ docker exec -i safeconnect-postgres psql \
 7. Commit changes
 8. Create pull request
 
+## Windows / Docker Desktop Development
+
+On Windows, Docker BuildKit does not reliably detect source file changes in the Windows filesystem. Rebuilding the frontend Docker image after every UI change is therefore unreliable.
+
+A local override file (`docker-compose.override.yml`) addresses this by mounting the pre-built `frontend/dist/` directory directly into the running nginx container:
+
+```yaml
+services:
+  frontend:
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro
+```
+
+This file is picked up automatically by Docker Compose alongside `docker-compose.yml`. It is only present in the development tree and does not affect CI/CD or production deployments.
+
+### Frontend Change Workflow (Windows)
+
+After editing any file in `frontend/src/`:
+
+```bash
+# Option 1: use the helper script
+bash rebuild-frontend.sh
+
+# Option 2: manual equivalent
+cd frontend && npm run build
+```
+
+Then hard-refresh the browser (`Ctrl+Shift+R`) to load the updated bundle.
+
+No Docker image rebuild or container restart is required.
+
+### Backend Change Workflow (all platforms)
+
+Backend TypeScript is compiled inside the Docker image. After editing backend source files:
+
+```bash
+docker-compose build backend && docker-compose up -d backend
+```
+
 ## IDE Setup
 
 ### VSCode Recommended Extensions
