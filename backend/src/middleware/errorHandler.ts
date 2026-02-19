@@ -9,11 +9,13 @@ export interface AppError extends Error {
 export class ApiError extends Error implements AppError {
   statusCode: number;
   isOperational: boolean;
+  code?: string;
 
-  constructor(statusCode: number, message: string, isOperational = true, stack = '') {
+  constructor(statusCode: number, message: string, isOperational = true, stack = '', code?: string) {
     super(message);
     this.statusCode = statusCode;
     this.isOperational = isOperational;
+    this.code = code;
     if (stack) {
       this.stack = stack;
     } else {

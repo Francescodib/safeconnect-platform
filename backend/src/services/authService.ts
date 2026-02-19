@@ -84,7 +84,7 @@ class AuthService {
       }) as JwtPayload;
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
-        throw new ApiError(401, 'Access token expired');
+        throw new ApiError(401, 'Access token expired', true, '', 'TOKEN_EXPIRED');
       }
       if (error instanceof jwt.JsonWebTokenError) {
         throw new ApiError(401, 'Invalid access token');

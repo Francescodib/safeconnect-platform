@@ -51,8 +51,10 @@ export const authenticate = async (
     next();
   } catch (error) {
     if (error instanceof ApiError) {
-      // Log invalid token event
-      await auditService.logInvalidTokenEvent((req as AuthRequest).userId, req.ip || 'unknown');
+      // Log security event only for genuinely invalid tokens, not for normal expiration
+      if (error.code !== 'TOKEN_EXPIRED') {
+        await auditService.logInvalidTokenEvent((req as AuthRequest).userId, req.ip || 'unknown');
+      }
       next(error);
     } else {
       next(new ApiError(401, 'Authentication failed'));
