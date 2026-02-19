@@ -9,7 +9,8 @@ const CSRF_TOKEN_COOKIE = 'csrf-token';
 const CSRF_TOKEN_EXPIRY = 3600; // 1 hour in seconds
 
 // Paths excluded from CSRF verification (pre-authentication endpoints)
-const CSRF_EXEMPT_PATHS = ['/api/auth/login', '/api/auth/register', '/api/auth/refresh'];
+// Note: middleware is mounted at /api/, so req.path is relative (no /api/ prefix)
+const CSRF_EXEMPT_PATHS = ['/auth/login', '/auth/register', '/auth/refresh'];
 
 /**
  * Generate a CSRF token

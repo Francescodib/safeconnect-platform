@@ -11,10 +11,10 @@ const fs = require('fs');
 const path = require('path');
 
 const tests = [
+  { name: 'CSRF (Cross-Site Request Forgery)', script: 'test-csrf.js' },
   { name: 'XSS (Cross-Site Scripting)', script: 'test-xss.js' },
   { name: 'SQL Injection', script: 'test-sql-injection.js' },
-  { name: 'Rate Limiting', script: 'test-rate-limiting.js' },
-  { name: 'CSRF (Cross-Site Request Forgery)', script: 'test-csrf.js' }
+  { name: 'Rate Limiting', script: 'test-rate-limiting.js' }
 ];
 
 const results = [];
