@@ -1,0 +1,23 @@
+# docker-compose.override.yml
+#
+# Local development overrides for Windows/Docker Desktop.
+#
+# Docker BuildKit on Windows does not reliably detect source file changes
+# in the Windows filesystem, so rebuilding the frontend image after every
+# code change is unreliable. Instead, the pre-built dist/ folder is
+# mounted directly into the nginx container. Nginx serves the files from
+# the host filesystem, so the running container always reflects the latest
+# build without any Docker image rebuild.
+#
+# Workflow for frontend changes:
+#   1. Make changes to frontend/src/
+#   2. Run: bash rebuild-frontend.sh   (runs npm run build)
+#   3. Hard-refresh the browser (Ctrl+Shift+R)
+#
+# The main docker-compose.yml and Dockerfile remain clean and work as-is
+# for CI/CD and production builds where this override is not present.
+
+services:
+  frontend:
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro

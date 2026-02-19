@@ -1,0 +1,21 @@
+{
+  "name": "safeconnect-penetration-testing",
+  "version": "1.0.0",
+  "description": "Security penetration testing scripts for SafeConnect Solutions",
+  "author": "Francesco di Biase",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "test:sql-injection": "node scripts/test-sql-injection.js",
+    "test:xss": "node scripts/test-xss.js",
+    "test:csrf": "node scripts/test-csrf.js",
+    "test:auth": "node scripts/test-authentication.js",
+    "test:rate-limit": "node scripts/test-rate-limiting.js",
+    "test:all": "node scripts/run-all-tests.js",
+    "report": "node scripts/generate-report.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.5",
+    "chalk": "^4.1.2"
+  }
+}
